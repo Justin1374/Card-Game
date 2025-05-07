@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 71a91ab0f6ae5ba44b16e2a739ed70ed
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - cardData: {instanceID: 0}
+  - cardImage: {instanceID: 0}
+  - nameText: {instanceID: 0}
+  - damage1Text: {instanceID: 0}
+  - damage2Text: {instanceID: 0}
+  - clubs: {instanceID: 0}
+  - spades: {instanceID: 0}
+  - hearts: {instanceID: 0}
+  - diamonds: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
