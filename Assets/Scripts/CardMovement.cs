@@ -57,7 +57,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
                 {
                     HandleDragState();
                     Debug.Log("Selected Card: " + rectTransform.gameObject.GetComponent<CardDisplay>().cardData.cardName);
-                    battleSystem.OnAttackButton(rectTransform.gameObject, rectTransform.gameObject.GetComponent<CardDisplay>().cardData.damageMax, 0);
+                    battleSystem.OnAttackButton(rectTransform.gameObject, rectTransform.gameObject.GetComponent<CardDisplay>().cardData.damageMax, 0, rectTransform.gameObject.GetComponent<CardDisplay>().cardData.cardName);
                     //playerHand.PlayCard(rectTransform.gameObject);
                     TransitionToState0();
                 }
@@ -66,7 +66,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
                     Debug.Log("Play Ability");
                     HandleDragState();
                     Debug.Log("Selected Card: " + rectTransform.gameObject.GetComponent<CardDisplay>().cardData.cardName);
-                    battleSystem.OnAttackButton(rectTransform.gameObject, rectTransform.gameObject.GetComponent<CardDisplay>().cardData.damageMax, 1);
+                    battleSystem.OnAttackButton(rectTransform.gameObject, rectTransform.gameObject.GetComponent<CardDisplay>().cardData.damageMax, 1, rectTransform.gameObject.GetComponent<CardDisplay>().cardData.cardName);
                     //playerHand.PlayCard(rectTransform.gameObject);
                     TransitionToState0();
                 }

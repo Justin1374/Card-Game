@@ -14,29 +14,36 @@ public class LevelSelect : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        currentLevel.text = GameController.floorLevel.ToString();
         animator = GetComponent<Animator>();
         transitionCanvas = GameObject.Find("ScreenFadeCanvas");
         transition = transitionCanvas.GetComponent<ScreenTransition>();
+        //animator.SetBool("ButtonPressed", false);
     }
 
     public void buttonPressed()
     {
-        currentLevel.text = "2";
+        currentLevel.text = (GameController.floorLevel + 1).ToString();
         animator.SetBool("ButtonPressed", true);
-        StartCoroutine(nextLevel());
+        StartCoroutine(nextLevel("BattleScene"));
     }
 
     public void shopButton()
     {
-        
+        StartCoroutine(nextLevel("Shop"));
     }
 
-    public IEnumerator nextLevel()
+    public void homeButton()
+    {
+        StartCoroutine(nextLevel("Home"));
+    }
+
+    public IEnumerator nextLevel(string scneneToLoad)
     {
         transition.TransitionOut();
-        yield return new WaitForSeconds(3.0f);
-        animator.SetBool("ButtonPressed", false);
-        SceneManager.LoadSceneAsync("BattleScene");
+        yield return new WaitForSeconds(2.5f);
+        //animator.SetBool("ButtonPressed", false);
+        SceneManager.LoadSceneAsync(scneneToLoad);
     }
 
     

@@ -11,14 +11,21 @@ public class DeckManager : MonoBehaviour
     private int handStartSize = 6;
     private int currentHandSize = 0;
     private int maxHandSize = 7;
+    
 
     private void Start()
     {
         //Load all card assets from the Resources folder
-        Card[] cards = Resources.LoadAll<Card>("Cards");
+        Card[] numberCards = Resources.LoadAll<Card>("NumberCards");
+        Card[] letterCards = Resources.LoadAll<Card>("LetterCards");
 
         //Add the loaded cards to the allCards list
-        allCards.AddRange(cards);
+        allCards.AddRange(numberCards);
+        if(GameController.deckExpansionItem == true)
+        {
+            allCards.AddRange(letterCards);
+        }
+        
 
         HandManager hand = FindObjectOfType<HandManager>();
         for(int i = 0; i < handStartSize; i++)

@@ -54,9 +54,13 @@ public class BattleHudManager : MonoBehaviour
         {
             powerImages[2].gameObject.SetActive(true);
         }
-        else
+        else if (unitData.power.ToString().Equals("P4"))
         {
             powerImages[3].gameObject.SetActive(true);
+        }
+        else
+        {
+            //Do nothing
         }
     }
 

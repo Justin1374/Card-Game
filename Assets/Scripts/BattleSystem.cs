@@ -18,10 +18,8 @@ public class BattleSystem : MonoBehaviour
     private Unit enemyUnit;
     private Unit playerUnit;
     private TMP_Text battleInfoText;
-
     GameObject playerHud;
     GameObject enemyHud;
-
     public BattleState state;
 
     void Start()
@@ -32,6 +30,8 @@ public class BattleSystem : MonoBehaviour
         enemyUnit.currentHP = enemyUnit.maxHP;
         enemyUnit.unitName = "Bob";
         enemyUnit.power = Unit.Power.P4;
+        enemyUnit.luck = 0;
+        enemyUnit.defense = 1;
 
         //Create copy of player using playerdata
         playerUnit = Instantiate(player);
@@ -47,9 +47,9 @@ public class BattleSystem : MonoBehaviour
         battleInfoText.transform.SetParent(transform);
         battleInfoText.rectTransform.anchoredPosition = Vector2.zero;
 
-        //Locate existing hand and deck managers (CHANGE TO: Instantiate hand and deck mamangers)
-        playerHand = FindObjectOfType<HandManager>(); //Later change this so that Battle System creates the Hand and Deck managers too.
-        gameDeck = FindObjectOfType<DeckManager>(); //^
+        //Locate existing hand and deck managers
+        playerHand = FindObjectOfType<HandManager>(); 
+        gameDeck = FindObjectOfType<DeckManager>();
         state = BattleState.START;
         StartCoroutine(SetupBattle(playerUnit, enemyUnit));
     }
@@ -70,71 +70,97 @@ public class BattleSystem : MonoBehaviour
         //Start exchange of turn states, player goes first
         yield return new WaitForSeconds(1f);
         PlayerTurn();
-
     }
 
-    IEnumerator PlayerAttack(Card.CardType type, int cardValue, int ability) //ability == 1 if active, 0 if false
+    IEnumerator PlayerAttack(Card.CardType type, int cardValue, string cardName)
     {
-        //Wait 2 seconds
+        //Wait
         yield return new WaitForSeconds(1.5f);
+
+        //Add luck value to cardValue
         cardValue += (int)(playerUnit.luck);
-        if (ability == 0)
+
+        //Check if an active power is used, otherwise attack enemy for the card's value
+        if (GameController.power1 == true && cardValue - (int)playerUnit.luck == 8)
         {
-            //Damage the enemy
-            enemyHud.GetComponent<BattleHudManager>().unitData.currentHP -= cardValue;
+            enemyUnit.currentHP -= (cardValue - (int)enemyUnit.defense);
+            playerUnit.currentHP += cardValue;
             enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
-            Debug.Log("Enemy takes " + cardValue + " damage!");
-            //StartCoroutine(DisplayLine("Enemy takes " + cardValue + " damage!"));
+            playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+            Debug.Log("Crazy8Power works");
+        }
+        else if (GameController.power2 == true && cardName.Equals("Ace"))
+        {
+            //Deal 21 damage ignoring defense when an Ace is played
+            enemyUnit.currentHP -= 21;
+            enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
         }
         else
         {
-            //Check card type and play corresponding ability
-            if (type == Card.CardType.Hearts)
-            {
-                playerHud.GetComponent<BattleHudManager>().unitData.currentHP += cardValue;
-                playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
-                Debug.Log("Player heals " + cardValue + " damage!");
-                //StartCoroutine(DisplayLine("Player heals " + cardValue + " damage!"));
-            }
-            else if (type == Card.CardType.Clubs)
-            {
-                playerUnit.luck += ((float)cardValue)/10;
-                if(playerUnit.luck >= (playerUnit.unitLevel + 1))
-                {
-                    playerUnit.luck = (playerUnit.unitLevel + 1);
-                }
-                playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
-                Debug.Log("Player's Luck is " + playerUnit.luck + "!");
-                //StartCoroutine(DisplayLine("Player's Luck increased by " + cardValue + "%!"));
-            }
-            else if(type == Card.CardType.Diamonds)
-            {
-                playerUnit.defense += ((float)cardValue)/10;
-                if (playerUnit.defense >= (playerUnit.unitLevel + 1))
-                {
-                    playerUnit.defense = (playerUnit.unitLevel + 1);
-                }
-                playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
-                Debug.Log("Player's Defense is " + playerUnit.defense + "!");
-                //Debug.Log("Test: " + (5-playerUnit.defense));
-                //StartCoroutine(DisplayLine("Player's Defense increased by " + cardValue + "%!"));
-            }
-            else
-            {
-                //Damage the enemy
-                enemyHud.GetComponent<BattleHudManager>().unitData.currentHP -= cardValue + 2;
-                playerHud.GetComponent<BattleHudManager>().unitData.currentHP -= 2;
-                enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
-                playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
-                Debug.Log("Everyone takes 2 extra damage!");
-                //StartCoroutine(DisplayLine("Everyone takes 2 extra damage!"));
-            }
+            //Damage the enemy
+            enemyUnit.currentHP -= (cardValue - (int)enemyUnit.defense);
+            enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+            Debug.Log("Enemy takes " + cardValue + " damage!");
         }
 
-        
+        TurnTransition();
+    }
 
+    IEnumerator PlayerAbility(Card.CardType type, int cardValue)
+    {
+        //Wait
+        yield return new WaitForSeconds(1.5f);
+
+        //Add luck value to cardValue
+        cardValue += (int)(playerUnit.luck);
+
+        //Check the card type and use the appropriate ability
+        //Hearts ability
+        if (type == Card.CardType.Hearts)
+        {
+            playerUnit.currentHP += cardValue;
+            playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+            Debug.Log("Player heals " + cardValue + " damage!");
+        }
+        //Clubs ability
+        else if (type == Card.CardType.Clubs)
+        {
+            playerUnit.luck += ((float)cardValue) / 10;
+            if (playerUnit.luck >= (playerUnit.unitLevel + 1))
+            {
+                playerUnit.luck = (playerUnit.unitLevel + 1);
+            }
+            playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+            Debug.Log("Player's Luck is " + playerUnit.luck + "!");
+        }
+        //Diamonds ability
+        else if (type == Card.CardType.Diamonds)
+        {
+            playerUnit.defense += ((float)cardValue) / 10;
+            if (playerUnit.defense >= (playerUnit.unitLevel + 1))
+            {
+                playerUnit.defense = (playerUnit.unitLevel + 1);
+            }
+            playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+            Debug.Log("Player's Defense is " + playerUnit.defense + "!");
+
+        }
+        //Spades/Default ability
+        else
+        {
+            //Damage the enemy
+            enemyUnit.currentHP -= (int)enemyUnit.defense;
+            enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+            Debug.Log("Deal damage equal to enemy's defense");
+        }
+
+        TurnTransition();
+    }
+
+    void TurnTransition()
+    {
         //Check if enemy is dead
-        if(enemyHud.GetComponent<BattleHudManager>().unitData.currentHP <= 0)
+        if (enemyHud.GetComponent<BattleHudManager>().unitData.currentHP <= 0)
         {
             //End Battle
             state = BattleState.WON;
@@ -144,14 +170,13 @@ public class BattleSystem : MonoBehaviour
         else
         {
             //Display state status
-            StartCoroutine(DisplayLine("Enemy's Turn"));
+            StartCoroutine(DisplayLine("Enemy's Turn", 0.04f));
 
             //Switch to enemy turn
             Debug.Log("Enemy Turn");
             state = BattleState.ENEMYTURN;
             StartCoroutine(EnemyTurn());
         }
-        
     }
 
     IEnumerator EndBattle()
@@ -159,22 +184,21 @@ public class BattleSystem : MonoBehaviour
         if(state == BattleState.WON)
         {
             //Display victory message
-            StartCoroutine(DisplayLine("You Won!"));
-            GameController.coins += 1;
+            StartCoroutine(DisplayLine("You Won!", 0.04f));
+            GameController.coins += 2 + Mathf.Abs(enemyUnit.currentHP);
+            GameController.floorLevel += 1;
             Debug.Log("Player's coins: " + GameController.coins);
             yield return new WaitForSeconds(2f);
         }
         else
         {
             //Display defeat message
-            StartCoroutine(DisplayLine("You Lost."));
+            StartCoroutine(DisplayLine("You Lost.", 0.04f));
             Debug.Log("You Lost!");
             yield return new WaitForSeconds(2f);
         }
-        SceneManager.LoadSceneAsync("Home");
-
         //Load out of battle
-
+        SceneManager.LoadSceneAsync("Home");
     }
 
     void PlayerTurn()
@@ -192,21 +216,26 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.PLAYERTURN;
     }
 
+    
+
     IEnumerator EnemyTurn()
     {
         Debug.Log("EnemyTurn() active");
+        //Wait
         yield return new WaitForSeconds(1.5f);
+
+        //Randomly select an integer not less than 0 to be used as a card's value
         int enemyCardValue = Random.Range(2, 10) - (int)playerUnit.defense;
         if(enemyCardValue < 0)
         {
             enemyCardValue = 0;
         }
+
         //Damage the player
-        playerHud.GetComponent<BattleHudManager>().unitData.currentHP -= enemyCardValue;
+        playerUnit.currentHP -= enemyCardValue;
         playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
         Debug.Log("Player takes " + enemyCardValue + " damage!");
-        //StartCoroutine(DisplayLine("Player takes " + enemyCardValue + " damage!"));
-
+        
         //Check if player is dead
         if (playerHud.GetComponent<BattleHudManager>().unitData.currentHP <= 0)
         {
@@ -217,15 +246,14 @@ public class BattleSystem : MonoBehaviour
         else
         {
             //Display state status
-            StartCoroutine(DisplayLine("Player's Turn"));
+            StartCoroutine(DisplayLine("Player's Turn", 0.04f));
 
             //Switch to player turn
             PlayerTurn();
         }
-
     }
 
-    public void OnAttackButton(GameObject card, int cardValue, int ability) //ability == 1 if active, 0 if false
+    public void OnAttackButton(GameObject card, int cardValue, int ability, string cardName) //ability == 1 if active, 0 if false
     {
         if(state != BattleState.PLAYERTURN)
         {
@@ -239,12 +267,18 @@ public class BattleSystem : MonoBehaviour
             //Remove card form hand and destroy Card
             playerHand.PlayCard(card);
             //Start attack
-            StartCoroutine(PlayerAttack(cardType, cardValue, ability));
+            if(ability == 1)
+            {
+                StartCoroutine(PlayerAbility(cardType, cardValue));
+            }
+            else
+            {
+                StartCoroutine(PlayerAttack(cardType, cardValue, cardName));
+            }
         }
-
     }
 
-    private IEnumerator DisplayLine(string text)
+    private IEnumerator DisplayLine(string text, float duration)
     {
         battleInfoText.text = "";
 
@@ -253,7 +287,6 @@ public class BattleSystem : MonoBehaviour
             battleInfoText.text += letter;
             yield return new WaitForSeconds(0.04f);
         }
-
     }
 
 }
