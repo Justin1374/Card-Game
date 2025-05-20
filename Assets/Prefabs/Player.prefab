@@ -52,7 +52,7 @@ MonoBehaviour:
   currentHP: 100
   luck: 0
   defense: 0
-  power: 0
+  power: 3
 --- !u!212 &762491892889008824
 SpriteRenderer:
   m_ObjectHideFlags: 0

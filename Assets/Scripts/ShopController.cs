@@ -10,10 +10,13 @@ public class ShopController : MonoBehaviour
     public GameObject BlackjackPower;
     public GameObject RoyalPackItem;
     public TMP_Text Coins;
-    public TMP_Text InfoText;    
+    public TMP_Text InfoText;   
+    public TMP_Text DescriptionText;
+    private SoundController soundPlayer;
 
     private void Start()
     {
+        soundPlayer = FindObjectOfType<SoundController>();
         //Display player's coins
         Coins.text = "Coins: " + GameController.coins.ToString();
 
@@ -43,6 +46,7 @@ public class ShopController : MonoBehaviour
         }
         else
         {
+            soundPlayer.BuySound();
             GameController.coins -= 10;
             Coins.text = "Coins: " + GameController.coins.ToString();
             GameController.power1 = true;
@@ -53,12 +57,13 @@ public class ShopController : MonoBehaviour
 
     public void BuyBlackjack()
     {
-        if (GameController.coins < 10)
+        if (GameController.coins < 7)
         {
             StartCoroutine(DisplayShopInfo("Not Enough Coins"));
         }
         else
         {
+            soundPlayer.BuySound();
             GameController.coins -= 10;
             Coins.text = "Coins: " + GameController.coins.ToString();
             GameController.power2 = true;
@@ -69,12 +74,13 @@ public class ShopController : MonoBehaviour
 
     public void BuyRoyalPack()
     {
-        if (GameController.coins < 10)
+        if (GameController.coins < 15)
         {
             StartCoroutine(DisplayShopInfo("Not Enough Coins"));
         }
         else
         {
+            soundPlayer.BuySound();
             GameController.coins -= 10;
             Coins.text = "Coins: " + GameController.coins.ToString();
             GameController.deckExpansionItem = true;

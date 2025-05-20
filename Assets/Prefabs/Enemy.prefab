@@ -45,11 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 687994f1838294b428e0140a02cf95a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitName: Fat Guy
+  unitName: Enemy
   unitLevel: 2
   damage: 5
-  maxHP: 20
-  currentHP: 69
+  maxHP: 10
+  currentHP: 10
+  luck: 0
+  defense: 0
   power: 3
 --- !u!212 &6733764149625141846
 SpriteRenderer:

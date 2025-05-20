@@ -13,6 +13,7 @@ public class BattleSystem : MonoBehaviour
     public TMP_Text infoText;
     HandManager playerHand;
     DeckManager gameDeck;
+    SoundController soundPlayer;
     public Unit player;
     public Unit enemyTemplate;
     private Unit enemyUnit;
@@ -21,35 +22,52 @@ public class BattleSystem : MonoBehaviour
     GameObject playerHud;
     GameObject enemyHud;
     public BattleState state;
+    private int battleHealth = 25 + 10*(GameController.floorLevel);
+    int enemyChoiceThreshold = 7;
 
     void Start()
     {
         //Create Enemy
         enemyUnit = Instantiate(enemyTemplate);
-        enemyUnit.maxHP = 100;
-        enemyUnit.currentHP = enemyUnit.maxHP;
-        enemyUnit.unitName = "Bob";
-        enemyUnit.power = Unit.Power.P4;
+        enemyUnit.maxHP = battleHealth;
+        enemyUnit.currentHP = battleHealth;
+        enemyUnit.unitName = "Enemy";
+        if(GameController.floorLevel > 2)
+        {
+            enemyUnit.power = (Unit.Power)Random.Range(0, 2);
+        }
+        else
+        {
+            enemyUnit.power = Unit.Power.P3;
+        }
         enemyUnit.luck = 0;
-        enemyUnit.defense = 1;
+        enemyUnit.defense = 0;
 
         //Create copy of player using playerdata
         playerUnit = Instantiate(player);
-        playerUnit.maxHP = player.maxHP;
-        playerUnit.currentHP = playerUnit.maxHP;
+        playerUnit.maxHP = battleHealth;
+        playerUnit.currentHP = battleHealth;
         playerUnit.unitName = player.unitName;
-        playerUnit.power = player.power;
-        playerUnit.luck = player.luck;
-        playerUnit.defense = player.defense;
+        if(GameController.power1 == true)
+        {
+            playerUnit.power = Unit.Power.Crazy_8;
+        }
+        if (GameController.power2 == true)
+        {
+            playerUnit.power = Unit.Power.Blackjack;
+        }
+        playerUnit.luck = 0;
+        playerUnit.defense = 0;
 
         //Create battle text
         battleInfoText = Instantiate(infoText);
         battleInfoText.transform.SetParent(transform);
         battleInfoText.rectTransform.anchoredPosition = Vector2.zero;
 
-        //Locate existing hand and deck managers
+        //Locate existing hand and deck managers, and sound player
         playerHand = FindObjectOfType<HandManager>(); 
         gameDeck = FindObjectOfType<DeckManager>();
+        soundPlayer = FindObjectOfType<SoundController>();
         state = BattleState.START;
         StartCoroutine(SetupBattle(playerUnit, enemyUnit));
     }
@@ -83,6 +101,7 @@ public class BattleSystem : MonoBehaviour
         //Check if an active power is used, otherwise attack enemy for the card's value
         if (GameController.power1 == true && cardValue - (int)playerUnit.luck == 8)
         {
+            soundPlayer.DamageSound();
             enemyUnit.currentHP -= (cardValue - (int)enemyUnit.defense);
             playerUnit.currentHP += cardValue;
             enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
@@ -92,12 +111,14 @@ public class BattleSystem : MonoBehaviour
         else if (GameController.power2 == true && cardName.Equals("Ace"))
         {
             //Deal 21 damage ignoring defense when an Ace is played
+            soundPlayer.DamageSound();
             enemyUnit.currentHP -= 21;
             enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
         }
         else
         {
             //Damage the enemy
+            soundPlayer.DamageSound();
             enemyUnit.currentHP -= (cardValue - (int)enemyUnit.defense);
             enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
             Debug.Log("Enemy takes " + cardValue + " damage!");
@@ -118,6 +139,7 @@ public class BattleSystem : MonoBehaviour
         //Hearts ability
         if (type == Card.CardType.Hearts)
         {
+            soundPlayer.HealSound();
             playerUnit.currentHP += cardValue;
             playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
             Debug.Log("Player heals " + cardValue + " damage!");
@@ -125,6 +147,7 @@ public class BattleSystem : MonoBehaviour
         //Clubs ability
         else if (type == Card.CardType.Clubs)
         {
+            soundPlayer.BuffSound();
             playerUnit.luck += ((float)cardValue) / 10;
             if (playerUnit.luck >= (playerUnit.unitLevel + 1))
             {
@@ -136,6 +159,7 @@ public class BattleSystem : MonoBehaviour
         //Diamonds ability
         else if (type == Card.CardType.Diamonds)
         {
+            soundPlayer.BuffSound();
             playerUnit.defense += ((float)cardValue) / 10;
             if (playerUnit.defense >= (playerUnit.unitLevel + 1))
             {
@@ -149,6 +173,7 @@ public class BattleSystem : MonoBehaviour
         else
         {
             //Damage the enemy
+            soundPlayer.DamageSound();
             enemyUnit.currentHP -= (int)enemyUnit.defense;
             enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
             Debug.Log("Deal damage equal to enemy's defense");
@@ -170,7 +195,7 @@ public class BattleSystem : MonoBehaviour
         else
         {
             //Display state status
-            StartCoroutine(DisplayLine("Enemy's Turn", 0.04f));
+            StartCoroutine(DisplayLine("Enemy's Turn", 0.02f));
 
             //Switch to enemy turn
             Debug.Log("Enemy Turn");
@@ -185,7 +210,7 @@ public class BattleSystem : MonoBehaviour
         {
             //Display victory message
             StartCoroutine(DisplayLine("You Won!", 0.04f));
-            GameController.coins += 2 + Mathf.Abs(enemyUnit.currentHP);
+            GameController.coins += 5 + Mathf.Abs(enemyUnit.currentHP);
             GameController.floorLevel += 1;
             Debug.Log("Player's coins: " + GameController.coins);
             yield return new WaitForSeconds(2f);
@@ -224,29 +249,62 @@ public class BattleSystem : MonoBehaviour
         //Wait
         yield return new WaitForSeconds(1.5f);
 
-        //Randomly select an integer not less than 0 to be used as a card's value
-        int enemyCardValue = Random.Range(2, 10) - (int)playerUnit.defense;
-        if(enemyCardValue < 0)
+        //Randomly select a positive integer to be used as a card's value
+        int enemyCardValue = Random.Range(2, 11);
+        enemyCardValue -= (int)playerUnit.defense;
+        enemyCardValue += (int)enemyUnit.luck;
+        if (enemyCardValue < 0)
         {
             enemyCardValue = 0;
         }
 
-        //Damage the player
-        playerUnit.currentHP -= enemyCardValue;
-        playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
-        Debug.Log("Player takes " + enemyCardValue + " damage!");
-        
+        //Decide enemy's action
+        int action = Random.Range(0, 11);
+        if(action < enemyChoiceThreshold || enemyUnit.currentHP >= enemyUnit.maxHP) //Attack
+        {
+            soundPlayer.DamageSound();
+            playerUnit.currentHP -= enemyCardValue;
+            playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+        }
+        else if (action == enemyChoiceThreshold)
+        {
+            if (enemyUnit.power == 0)
+            {
+                soundPlayer.DamageSound();
+                playerUnit.currentHP -= enemyCardValue;
+                enemyUnit.currentHP += enemyCardValue;
+                enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+                playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+                Debug.Log("Enemy Crazy8Power works");
+            }
+            else if (enemyUnit.power == (Unit.Power)1)
+            {
+                //Deal 21 damage ignoring defense when an Ace is played
+                soundPlayer.DamageSound();
+                playerUnit.currentHP -= 21;
+                playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+                Debug.Log("Emeny BlackJack Power works");
+            }
+
+        }
+        else //Heal
+        {
+            soundPlayer.HealSound();
+            enemyUnit.currentHP += enemyCardValue;
+            enemyHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
+        }
+
         //Check if player is dead
         if (playerHud.GetComponent<BattleHudManager>().unitData.currentHP <= 0)
         {
             //End Battle
             state = BattleState.LOST;
-            EndBattle();
+            StartCoroutine(EndBattle());
         }
         else
         {
             //Display state status
-            StartCoroutine(DisplayLine("Player's Turn", 0.04f));
+            StartCoroutine(DisplayLine("Player's Turn", 0.02f));
 
             //Switch to player turn
             PlayerTurn();

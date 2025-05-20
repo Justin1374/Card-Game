@@ -54,7 +54,6 @@ public class DeckManager : MonoBehaviour
         currentIndex = Random.Range(0, allCards.Count);
         Card nextCard = allCards[currentIndex];
         handManager.AddCardToHand(nextCard);
-        //currentIndex = (currentIndex + 1) % allCards.Count;
         addToDiscardPile(currentIndex);
 
 

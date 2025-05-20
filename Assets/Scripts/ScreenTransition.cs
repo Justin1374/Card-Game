@@ -16,7 +16,7 @@ public class ScreenTransition : MonoBehaviour
         }
         else
         {
-            TransitionOut();
+            TransitionOut(duration);
         }
     }
 
@@ -25,7 +25,7 @@ public class ScreenTransition : MonoBehaviour
         StartCoroutine(FadeCanvasGroup(canvasGroup, canvasGroup.alpha, 0, duration));
     }
 
-    public void TransitionOut()
+    public void TransitionOut(float duration)
     {
         StartCoroutine(FadeCanvasGroup(canvasGroup, canvasGroup.alpha, 1, duration));
     }

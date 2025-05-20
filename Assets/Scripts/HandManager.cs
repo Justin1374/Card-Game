@@ -35,7 +35,6 @@ public class HandManager : MonoBehaviour
     {
         cardsInHand.Remove(card);
         Destroy(card);
-        //battleSystem.OnAttackButton(card.GetComponent<CardDisplay>().cardData.damageMax);
         UpdateHandVisuals();
         
     }
