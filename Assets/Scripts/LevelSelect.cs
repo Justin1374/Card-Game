@@ -34,13 +34,13 @@ public class LevelSelect : MonoBehaviour
     public void shopButton()
     {
         soundPlayer.ClickSound();
-        StartCoroutine(nextLevel("Shop", 1.5f));
+        StartCoroutine(nextLevel("Shop", 1.3f));
     }
 
     public void homeButton()
     {
         soundPlayer.ClickSound();
-        StartCoroutine(nextLevel("Home", 1.5f));
+        StartCoroutine(nextLevel("Home", 1.3f));
     }
 
     public IEnumerator nextLevel(string scneneToLoad, float duration)

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    string itemName;
-    string description;
-    int cost;
+    public string itemName;
+    public string description;
+    public int cost;
 
 }

@@ -5,12 +5,17 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public enum BattleState { START, PLAYERTURN, ENEMYTURN, WON, LOST, WAIT}
 public class BattleSystem : MonoBehaviour
 {
     public GameObject BattleHudPrefab;
     public TMP_Text infoText;
+    public TMP_Text xpEarned;
+    public TMP_Text coinsEarned;
+    public Sprite[] xpBarSprite;
+    public GameObject xpBar;
     HandManager playerHand;
     DeckManager gameDeck;
     SoundController soundPlayer;
@@ -29,9 +34,17 @@ public class BattleSystem : MonoBehaviour
     {
         //Create Enemy
         enemyUnit = Instantiate(enemyTemplate);
+        //Set Enemy health, level and name
         enemyUnit.maxHP = battleHealth;
         enemyUnit.currentHP = battleHealth;
+        enemyUnit.unitLevel = GameController.floorLevel;
+        if(enemyUnit.unitLevel < 0)
+        {
+            enemyUnit.unitLevel = 0;
+        }
         enemyUnit.unitName = "Enemy";
+        //Determine Enemy modifiers based on current level
+        //Determine if the enemy has a power
         if(GameController.floorLevel > 2)
         {
             enemyUnit.power = (Unit.Power)Random.Range(0, 2);
@@ -40,14 +53,31 @@ public class BattleSystem : MonoBehaviour
         {
             enemyUnit.power = Unit.Power.P3;
         }
-        enemyUnit.luck = 0;
-        enemyUnit.defense = 0;
+        //Determine if the enemy has increased luck
+        if(GameController.floorLevel > 4) 
+        {
+            enemyUnit.luck = Random.Range(0, enemyUnit.unitLevel - 4);        
+        }
+        else
+        {
+            enemyUnit.luck = 0;
+        }
+        //Determine if the enemy has increased defense
+        if( GameController.floorLevel > 6)
+        {
+            enemyUnit.defense = Random.Range(0, enemyUnit.unitLevel - 6);
+        }
+        else 
+        {
+            enemyUnit.defense = 0;
+        }
 
         //Create copy of player using playerdata
         playerUnit = Instantiate(player);
         playerUnit.maxHP = battleHealth;
         playerUnit.currentHP = battleHealth;
         playerUnit.unitName = player.unitName;
+        playerUnit.unitLevel = GameController.playerLevel;
         if(GameController.power1 == true)
         {
             playerUnit.power = Unit.Power.Crazy_8;
@@ -209,15 +239,46 @@ public class BattleSystem : MonoBehaviour
         if(state == BattleState.WON)
         {
             //Display victory message
+            soundPlayer.WinSound();
             StartCoroutine(DisplayLine("You Won!", 0.04f));
+
+            //Display and add coins earned
+            coinsEarned.text = "+" + (5 + Mathf.Abs(enemyUnit.currentHP)).ToString() + " Coins";
             GameController.coins += 5 + Mathf.Abs(enemyUnit.currentHP);
+
+            //Increase current floor level
             GameController.floorLevel += 1;
+
+            //Display and add experience earned
+            xpEarned.text = "+" + (0.2f + Mathf.Abs((float)enemyUnit.currentHP/10)).ToString() + " Xp";
+            GameController.xp += 0.2f + Mathf.Abs((float)enemyUnit.currentHP/10);
+            xpBar.gameObject.SetActive(true);
+            Debug.Log("Current xp is: " + GameController.xp);
+            Debug.Log("Sprite array index is: " + (int)(GameController.xp*10));
+            
+
+            //Increase player level if xp threshold is reached
+            if(GameController.xp >= 1)
+            {
+                GameController.playerLevel += 1;
+                xpBar.GetComponent<UnityEngine.UI.Image>().sprite = xpBarSprite[(int)(GameController.xp * 10) - 10];
+                yield return new WaitForSeconds(1f);
+                StartCoroutine(DisplayLine("Level Up!", 0.04f));
+                GameController.xp -= 1;
+                Debug.Log("Xp after level up is: " + GameController.xp);
+            }
+            else
+            {
+                xpBar.GetComponent<UnityEngine.UI.Image>().sprite = xpBarSprite[(int)(GameController.xp * 10)];
+                Debug.Log("Xp after match is: " + GameController.xp);
+            }
             Debug.Log("Player's coins: " + GameController.coins);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(4f);
         }
         else
         {
             //Display defeat message
+            soundPlayer.DefeatSound();
             StartCoroutine(DisplayLine("You Lost.", 0.04f));
             Debug.Log("You Lost!");
             yield return new WaitForSeconds(2f);
@@ -231,6 +292,7 @@ public class BattleSystem : MonoBehaviour
         //Check if player has cards, draw 3 if not
         if(playerHand.cardsInHand.Count <= 0)
         {
+            soundPlayer.DealCardSound();
             for(int i=0; i<3; i++)
             {
                 gameDeck.DrawCard(playerHand);
@@ -266,7 +328,7 @@ public class BattleSystem : MonoBehaviour
             playerUnit.currentHP -= enemyCardValue;
             playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
         }
-        else if (action == enemyChoiceThreshold)
+        else if (action == enemyChoiceThreshold) //Power
         {
             if (enemyUnit.power == 0)
             {
@@ -283,7 +345,13 @@ public class BattleSystem : MonoBehaviour
                 soundPlayer.DamageSound();
                 playerUnit.currentHP -= 21;
                 playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
-                Debug.Log("Emeny BlackJack Power works");
+                Debug.Log("Enemy BlackJack Power works");
+            }
+            else
+            {
+                soundPlayer.DamageSound();
+                playerUnit.currentHP -= enemyCardValue;
+                playerHud.GetComponent<BattleHudManager>().UpdateHudDisplay();
             }
 
         }
@@ -307,6 +375,7 @@ public class BattleSystem : MonoBehaviour
             StartCoroutine(DisplayLine("Player's Turn", 0.02f));
 
             //Switch to player turn
+            yield return new WaitForSeconds(1.2f);
             PlayerTurn();
         }
     }
@@ -319,6 +388,7 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
+            soundPlayer.PlayCardSound();
             state = BattleState.WAIT;
             //Extract additional info of selected card
             Card.CardType cardType = card.GetComponent<CardDisplay>().cardData.cardType;

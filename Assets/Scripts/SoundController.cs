@@ -6,7 +6,7 @@ using UnityEngine;
 public class SoundController : MonoBehaviour
 {
     public AudioSource src;
-    public AudioClip damageSfx, buySfx, buffSfx, clickSfx, elevatorSfx, healSfx;
+    public AudioClip damageSfx, buySfx, buffSfx, clickSfx, elevatorSfx, healSfx, playCardSfx, dealCardSfx, winSfx, defeatSfx;
     private int volume;
 
     private void Start()
@@ -25,7 +25,7 @@ public class SoundController : MonoBehaviour
 
     public void DamageSound()
     {
-        src.volume = GameController.volume;
+        src.volume = GameController.volume/1.5f;
         src.clip = damageSfx;
         src.Play();
     }
@@ -58,8 +58,32 @@ public class SoundController : MonoBehaviour
         src.Play();
     }
 
-    //public void DefeatSound() {}
-    //public void WinSound() {}
-    //public void ErrorSound() {}
+    public void PlayCardSound()
+    {
+        src.volume = GameController.volume;
+        src.clip = playCardSfx;
+        src.Play();
+    }
+
+    public void DealCardSound()
+    {
+        src.volume = GameController.volume;
+        src.clip = dealCardSfx;
+        src.Play();
+    }
+
+    public void WinSound()
+    {
+        src.volume = GameController.volume;
+        src.clip = winSfx;
+        src.Play();
+    }
+
+    public void DefeatSound()
+    {
+        src.volume = GameController.volume;
+        src.clip = defeatSfx;
+        src.Play();
+    }
 
 }

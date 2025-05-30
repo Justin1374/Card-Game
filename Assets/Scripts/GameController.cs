@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     //Game Data
     public static int volume = 1;
     public static int coins = 0;
+    public static float xp = 0;
     public static int playerLevel = 0;
     public static int floorLevel = 0;
     public static bool power1 = false;

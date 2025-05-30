@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopController : MonoBehaviour
 {
@@ -11,29 +12,48 @@ public class ShopController : MonoBehaviour
     public GameObject RoyalPackItem;
     public TMP_Text Coins;
     public TMP_Text InfoText;   
-    public TMP_Text DescriptionText;
+    public GameObject DescriptionText;
     private SoundController soundPlayer;
 
     private void Start()
     {
+        //Setup audio and shop data
         soundPlayer = FindObjectOfType<SoundController>();
         //Display player's coins
         Coins.text = "Coins: " + GameController.coins.ToString();
 
-        //Remove items from shop if they are bought or if they can no longer be bought
+        //Enable not yet bought items and set their values
+        //Crazy8 Power
         if(GameController.power1 == true)
         {
             Crazy8Power.gameObject.SetActive(false);
             BlackjackPower.gameObject.SetActive(false);
         }
+        else
+        {
+            Crazy8Power.GetComponent<Item>().cost = 10;
+            Crazy8Power.GetComponent<Item>().description = "Any 8 card played through a normal action will deal 8 damage to the enemy and heal you for 8 HP. Ability action can still be used. Cost: " + Crazy8Power.GetComponent<Item>().cost.ToString();
+        }
+        //Blackjack Power
         if (GameController.power2 == true)
         {
             BlackjackPower.gameObject.SetActive(false);
             Crazy8Power.gameObject.SetActive(false);
         }
+        else
+        {
+            BlackjackPower.GetComponent<Item>().cost = 7;
+            BlackjackPower.GetComponent<Item>().description = "Any Ace played through a normal action will deal 21 damage to the enemy ignoring defense. Ability action can still be used. Cost: " + BlackjackPower.GetComponent<Item>().cost.ToString();
+        }
+        //Royal Pack Item
         if (GameController.deckExpansionItem == true)
         {
             RoyalPackItem.gameObject.SetActive(false);
+        }
+        else
+        {
+            RoyalPackItem.GetComponent<Item>().cost = 14;
+            RoyalPackItem.GetComponent<Item>().description = "Adds King, Queen, Ace, and Jack cards of each type that all have a value of 10. Cost: " + RoyalPackItem.GetComponent<Item>().cost.ToString();
         }
     }
 
@@ -88,6 +108,7 @@ public class ShopController : MonoBehaviour
         }
     }
 
+    //Display general messages, such as "Not Enough Coins"
     public IEnumerator DisplayShopInfo(string text)
     {
         InfoText.text = text;
@@ -96,14 +117,20 @@ public class ShopController : MonoBehaviour
         
     }
 
+    //Display an items spesific information
     public void DisplayItemInformation(GameObject obj)
     {
         InfoText.text = obj.name;
+        DescriptionText.GetComponentInChildren<TMP_Text>().text = obj.GetComponent<Item>().description;
+        DescriptionText.GetComponent<Image>().color = Color.black;
     }
 
+    //Resets text to default value
     public void ResetItemInformation()
     {
         InfoText.text = "";
+        DescriptionText.GetComponentInChildren<TMP_Text>().text = "";
+        DescriptionText.GetComponent<Image>().color = Color.clear;
     }
 
 

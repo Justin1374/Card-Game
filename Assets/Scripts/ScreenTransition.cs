@@ -35,11 +35,13 @@ public class ScreenTransition : MonoBehaviour
         float elaspsedTime = 0.0f;
         while (elaspsedTime < duration)
         {
+            cg.blocksRaycasts = true;
             elaspsedTime += Time.deltaTime;
             cg.alpha = Mathf.Lerp(start, end, elaspsedTime/duration);
             yield return null;
         }
         cg.alpha = end;
+        cg.blocksRaycasts = false;
     }
 
 }

@@ -148,3 +148,7 @@ MonoBehaviour:
   clickSfx: {fileID: 8300000, guid: 95090005e53be734f9250646864ced26, type: 3}
   elevatorSfx: {fileID: 8300000, guid: 95027aca2a94c1a42a22b9756c78785b, type: 3}
   healSfx: {fileID: 8300000, guid: 2caabb0eb970d9947bed1ba25d1aece6, type: 3}
+  playCardSfx: {fileID: 8300000, guid: 71ba61d795ea0e744a8ea1f5fa7d4e6c, type: 3}
+  dealCardSfx: {fileID: 8300000, guid: b1fbede8d79e22b4c869409d0eb8d86d, type: 3}
+  winSfx: {fileID: 8300000, guid: d204dab804cc0574fbba68e97dba7e06, type: 3}
+  defeatSfx: {fileID: 8300000, guid: 382b3f187053a984eacd2374abe31558, type: 3}
