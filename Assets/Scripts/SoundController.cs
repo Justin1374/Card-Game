@@ -25,7 +25,7 @@ public class SoundController : MonoBehaviour
 
     public void DamageSound()
     {
-        src.volume = GameController.volume/1.5f;
+        src.volume = GameController.volume/2f;
         src.clip = damageSfx;
         src.Play();
     }

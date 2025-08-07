@@ -615,17 +615,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 375324227}
   m_CullTransparentMesh: 1
---- !u!114 &418281591 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5707963188251878285, guid: f6b116ea45ae3c34b89f538e8ce261e4, type: 3}
-  m_PrefabInstance: {fileID: 6364350577857918205}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 847cca854c354304e9c184790c45e89a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &655995399
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,6 +830,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionsMenu: {fileID: 1836458573587140417, guid: c1fd6ab921ba59e44845906a47729197, type: 3}
+  howToPlayMenu: {fileID: 0}
+  descriptionText: {fileID: 0}
 --- !u!1 &1407092207
 GameObject:
   m_ObjectHideFlags: 0
@@ -1060,9 +1051,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 418281591}
-        m_TargetAssemblyTypeName: SoundController, Assembly-CSharp
-        m_MethodName: Button1
+      - m_Target: {fileID: 1936791161}
+        m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
+        m_MethodName: Quit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1244,6 +1235,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1675123589}
   m_CullTransparentMesh: 1
+--- !u!1001 &1709753632
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2914333402808035829, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_Name
+      value: MusicPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 873.67737
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 493.67554
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -6.837845
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5212554143718442199, guid: be097aca71d238c439cf8caa60168098, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: be097aca71d238c439cf8caa60168098, type: 3}
 --- !u!1 &1936791160
 GameObject:
   m_ObjectHideFlags: 0
@@ -1714,3 +1762,4 @@ SceneRoots:
   - {fileID: 655995402}
   - {fileID: 1936791162}
   - {fileID: 6364350577857918205}
+  - {fileID: 1709753632}

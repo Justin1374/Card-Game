@@ -17,7 +17,7 @@ public class ShopController : MonoBehaviour
 
     private void Start()
     {
-        //Setup audio and shop data
+        //Setup audio
         soundPlayer = FindObjectOfType<SoundController>();
         //Display player's coins
         Coins.text = "Coins: " + GameController.coins.ToString();

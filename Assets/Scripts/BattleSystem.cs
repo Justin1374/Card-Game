@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -42,7 +41,18 @@ public class BattleSystem : MonoBehaviour
         {
             enemyUnit.unitLevel = 0;
         }
-        enemyUnit.unitName = "Enemy";
+        else if (enemyUnit.unitLevel < 3)
+        {
+            enemyUnit.unitName = "Grunt";
+        }
+        else if(enemyUnit.unitLevel < 9)
+        {
+            enemyUnit.unitName = "Henchman";
+        }
+        else
+        {
+            enemyUnit.unitName = "BOSS";
+        }
         //Determine Enemy modifiers based on current level
         //Determine if the enemy has a power
         if(GameController.floorLevel > 2)
@@ -54,18 +64,18 @@ public class BattleSystem : MonoBehaviour
             enemyUnit.power = Unit.Power.P3;
         }
         //Determine if the enemy has increased luck
-        if(GameController.floorLevel > 4) 
+        if(GameController.floorLevel > 6) 
         {
-            enemyUnit.luck = Random.Range(0, enemyUnit.unitLevel - 4);        
+            enemyUnit.luck = Random.Range(0, enemyUnit.unitLevel - 6);        
         }
         else
         {
             enemyUnit.luck = 0;
         }
         //Determine if the enemy has increased defense
-        if( GameController.floorLevel > 6)
+        if( GameController.floorLevel > 3)
         {
-            enemyUnit.defense = Random.Range(0, enemyUnit.unitLevel - 6);
+            enemyUnit.defense = Random.Range(0, enemyUnit.unitLevel - 3);
         }
         else 
         {

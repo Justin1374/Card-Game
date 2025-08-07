@@ -10,7 +10,9 @@ using Unity.VisualScripting;
 public class OptionsMenuController : MonoBehaviour
 {
     public GameObject optionsMenu;
+    public GameObject howToPlayMenu;
     private GameObject currentMenu;
+    private GameObject currentHowToPlayMenu;
     private SoundController soundPlayer;
     public TMP_Text descriptionText;
 
@@ -20,7 +22,7 @@ public class OptionsMenuController : MonoBehaviour
         soundPlayer = FindObjectOfType<SoundController>();
     }
 
-    public void openOptionsMenu() //put open and cloe options menu in seperate script
+    public void openOptionsMenu()
     {
         soundPlayer.ClickSound();
         currentMenu = Instantiate(optionsMenu, new Vector3(0, 0, 0), Quaternion.identity);
@@ -30,6 +32,12 @@ public class OptionsMenuController : MonoBehaviour
     {
         soundPlayer.ClickSound();
         Destroy(this.gameObject);
+    }
+
+    public void openHowToPlayMenu() //put open and cloe options menu in seperate script
+    {
+        soundPlayer.ClickSound();
+        currentHowToPlayMenu = Instantiate(howToPlayMenu, new Vector3(0, 0, 0), Quaternion.identity);
     }
 
     public void muteSound()
@@ -76,5 +84,10 @@ public class OptionsMenuController : MonoBehaviour
     public void quitDescription()
     {
         descriptionText.text = "Exit the game.";
+    }
+
+    public void howToPlayDescription()
+    {
+        descriptionText.text = "How to play.";
     }
 }
